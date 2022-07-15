@@ -1,0 +1,5 @@
+Method,path,req,Param Name,CORS,api_id,Requester,Handler,Dev_resources-id,AWS-DEV,Dev Tested,AWS-Pre-prod,Pre
+POST,/change_password,header,token,yes,kbbif3,Trong,Samantha,597e0tv4p9,20200715,20200720,20200720,20200721
+POST,/change_password,body,password,yes,kbbif3,Trong,Samantha,597e0tv4p9,20200715,20200720,20200720,20200721
+POST,/change_password,body,new_password,yes,kbbif3,Trong,Samantha,597e0tv4p9,20200715,20200720,20200720,20200721
+POST,/login,body,emal,yes,qtyvjc,Trong,Samantha,597e0tv4p9,20200715,20200720,20200720,20200721
