@@ -136,14 +136,15 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 										
 											for(let k=0;k<count.length;k++){
 												if(nameOfPath[i]==count[k].path){
-													x=count[k].parentId
+													x=count[k].id
 													i++
 													console.log(k,'i am k in err(if)')
 													console.log(x,'i am x in err (if)')
 											        console.log(nameOfPath[i],'i am nameOfPath[i] in err(if)')
-													promiseFn(x,i,time=2000)
+													getNewId(x,i)
 												}else{
-                                                      console.log(err)
+                                                      //console.log(err)
+													  
 												}
 											}
 											// console.log(x,'i am x in err')
@@ -152,10 +153,12 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 											// promiseFn(x,i,time=2000)
 										}
 										else{
+											
 											console.log(data,'data in success!!!!!!!!!!!!!!!!!')
 											count.push({
 												path:data.pathPart,
-												parentId:data.id	
+												id:data.id,
+												parentId:data.parentId
 											})
 											//console.log(data.id)
 											
