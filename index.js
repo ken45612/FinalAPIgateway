@@ -11,7 +11,7 @@ let csv_path = "./staff_api.csv";
 let apig = new AWS.APIGateway();
 let base_resource_id = "4m9s6ygvye"
 let base_url="http://18.207.163.64:3000/api/courses"
-
+let vpc_connection_id = "upkcbh"
 
 const apiConfigure = async (csv_path, base_resource_id) => {
 	let json_arr = await csv().fromFile(csv_path)
@@ -22,7 +22,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
     let arr = []
 	let count =[]
 
-	const API_Id = 'h0dx704i28'
+	const API_Id = '3qix2z4o55'
 	let path_arr = []
 	json_arr.forEach( jsonObj => {
 		if (!((jsonObj.Method == lastMethod) && (jsonObj.path == lastPath))) {
@@ -54,7 +54,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 	// merged_arr = merged_arr.concat(curObj)
 	// console.log("REE", merged_arr)
 	apig.getResources({
-		restApiId:'h0dx704i28'
+		restApiId:'3qix2z4o55'
 	},function(err,data){
 		if(err){console.log('Get root resource failed:\n',err)}
 		else{//console.log(data)  //{ items: [ { id: 'in5w82n4dj', path: '/' } ] }
@@ -62,7 +62,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 			
 			    merged_arr.forEach(mergedObj => {
 				console.log(mergedObj)
-				
+				let secondPath ='/'
 				var fields = mergedObj.path.split('/')
 		        const nameOfPath = fields.filter(element=>{
 			    return element !== ''})
@@ -73,33 +73,18 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 				let x= defaultResourceId
                 let i = 0;
 				let z=0;
+				
+				console.log(mergedObj.Method)
+				
                 
                 arr.push({path:nameOfPath})
                 z++
 		
-               
-	
-			
-			// 	path_arr.push(nameOfPath)			
-			//     console.log(path_arr,'i am path_arr')
-			    
-				
-			// 	   for(const element of path_arr){
-			// 		console.log(element)
-			// 		if(count[element]){
-			// 			count[element]+=1
-			// 			console.log('first')
-			// 		}else{
-			// 			count[element]=1
-			// 			console.log('second')
-			// 		}
-			// 	 }
-			     
-			// console.log(count)
 
 
 
-				    // createResource and getNewId
+
+				    // // createResource and getNewId
                     async function getNewId(x,i){
 						let idData = await promiseFn(x,i)
 						x=idData
@@ -112,7 +97,9 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 							console.log(i,'second')
 							 getNewId(x,i)
 							
-						}	
+						}
+						// This line below insert putMethod
+
 					}
 
                 
@@ -121,12 +108,12 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 						return new Promise((resolve)=>{
 							setTimeout(() =>  {
 								apig.createResource({
-										restApiId:'h0dx704i28',
+										restApiId:'3qix2z4o55',
 										parentId:x,
 										pathPart:nameOfPath[i]
 									},function (err,data){
 										if(err){
-										
+										    console.log(err)
 									        console.log(count,'i am err')
 											console.log(nameOfPath)
 											console.log(i)
@@ -138,23 +125,22 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 												if(nameOfPath[i]==count[k].path){
 													x=count[k].id
 													i++
-													console.log(k,'i am k in err(if)')
-													console.log(x,'i am x in err (if)')
-											        console.log(nameOfPath[i],'i am nameOfPath[i] in err(if)')
+													secondPath += count[k].path+'/'
+													// console.log(k,'i am k in err(if)')
+													// console.log(x,'i am x in err (if)')
+											        // console.log(nameOfPath[i],'i am nameOfPath[i] in err(if)')
 													getNewId(x,i)
 												}else{
                                                       //console.log(err)
 													  
 												}
 											}
-											// console.log(x,'i am x in err')
-											// console.log(nameOfPath[i],'i am nameOfPath[i] in err')
-											// console.log(err)
-											// promiseFn(x,i,time=2000)
+										
 										}
 										else{
 											
 											console.log(data,'data in success!!!!!!!!!!!!!!!!!')
+											secondPath += data.pathPart + '/'
 											count.push({
 												path:data.pathPart,
 												id:data.id,
@@ -163,18 +149,168 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 											//console.log(data.id)
 											
 											resolve(x=data.id)
-											
+                                                    // console.log(x,'hihihihihi')
+											        // console.log(data.pathPart,'byebyebyebye')
+											        // console.log(mergedObj.Method)
+													// console.log(mergedObj.requestParameters)
+													// step 2
+											        // // // apig.putMethod({
+												    // // //      restApiId:'3qix2z4o55',
+												    // // //      resourceId:x,
+												    // // //      httpMethod:mergedObj.Method,
+												    // // //      authorizationType:'NONE',
+													// // // 	 requestParameters:mergedObj.requestParameters,
+													// // // 	 apiKeyRequired: true 
+											        // // //      },function(err,data){
+												    // // //      if(err){
+												    // // //        	console.log(err)
+												    // // //      }else{
+												    // // //        	console.log(data)
+													// // // 		// console.log(data.httpMethod)
+													// // // 		// console.log(mergedObj.Method,'i am mergedObj')
+													// // // 		// console.log(x,'i am x')
+													// // // 		//200
+													// // // 		apig.putMethodResponse({
+													// // // 			restApiId:'3qix2z4o55',
+													// // // 			resourceId:x,
+													// // // 			httpMethod:mergedObj.Method,
+													// // // 			statusCode:'200',
+													// // // 			responseModels: {
+													// // // 				"application/json": "ReturnSuccess"
+													// // // 			  /* '<String>': ... */
+													// // // 			},
+													// // // 			responseParameters: {
+													// // // 				"method.response.header.Access-Control-Allow-Origin": false
+													// // // 			}
+															
+													// // // 		},function (err,data){
+													// // // 			if(err){
+													// // // 				console.log(err)
+													// // // 			}else{
+													// // // 				console.log(data,'successfully bulid putmethod response')
+													// // // 				// console.log(nameOfPath)
+															
+													// // // 			}
+													// // // 		})
+													// // // 		// 400
+													// // // 		apig.putMethodResponse({
+													// // // 			restApiId:'3qix2z4o55',
+													// // // 			resourceId:x,
+													// // // 			httpMethod:mergedObj.Method,
+													// // // 			statusCode:'400',
+													// // // 			responseModels: {
+													// // // 				"application/json": "ReturnError"
+													// // // 			  /* '<String>': ... */
+													// // // 			},
+													// // // 			responseParameters: {
+													// // // 				"method.response.header.Access-Control-Allow-Origin": false
+													// // // 			}
+															
+													// // // 		},function (err,data){
+													// // // 			if(err){console.log(err)}
+													// // // 			else{console.log(data)}
+													// // // 		})
+													// // // 		// 500
+													// // // 		apig.putMethodResponse({
+													// // // 			restApiId:'3qix2z4o55',
+													// // // 			resourceId:x,
+													// // // 			httpMethod:mergedObj.Method,
+													// // // 			statusCode:'500',
+													// // // 			responseModels: {
+													// // // 				"application/json": "ReturnError"
+													// // // 			  /* '<String>': ... */
+													// // // 			},
+													// // // 			responseParameters: {
+													// // // 				"method.response.header.Access-Control-Allow-Origin": false
+													// // // 			}
+															
+													// // // 		},function (err,data){
+													// // // 			if(err){console.log(err)}
+													// // // 			else{console.log(data)}
+													// // // 		})
+													// // // 		console.log(secondPath)
+													// // // 		apig.putIntegration({
+													// // // 					restApiId:'3qix2z4o55',
+													// // // 					resourceId:x,
+													// // // 					httpMethod:mergedObj.Method,
+													// // // 					type:'HTTP',
+													// // // 					connectionType:'VPC_LINK',
+													// // // 					connectionId:vpc_connection_id,
+													// // // 					integrationHttpMethod:mergedObj.Method,
+													// // // 					passthroughBehavior: 'WHEN_NO_MATCH',
+													// // // 					uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+secondPath,
+													// // // 					requestParameters:mergedObj.integration_requestParameters,
+													// // // 					timeoutInMillis: 29000,	
+													// // // 					cacheKeyParameters: []
+													// // // 				},function(err,data){
+													// // // 					if(err){
+													// // // 						console.log(err)
+													// // // 					}else{
+													// // // 						console.log(data,'inside put integration')
+													// // // 						console.log(mergedObj.Method,'inside')
+													// // // 						console.log(x,'inside')
+													// // // 						let putIntegrationResponse_params_200 = {
+													// // // 							httpMethod:mergedObj.Method,
+													// // // 							resourceId: x,
+													// // // 							restApiId:'3qix2z4o55',
+													// // // 							statusCode: '200',
+													// // // 							responseParameters: {
+													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
+													// // // 							},
+													// // // 							selectionPattern: '2\\d{2}'
+													// // // 						}
+													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
+													// // // 							if(err){console.log(err)}
+													// // // 							else{console.log(data)}
+													// // // 						})
+													// // // 						let putIntegrationResponse_params_400 = {
+													// // // 							httpMethod:mergedObj.Method,
+													// // // 							resourceId: x,
+													// // // 							restApiId:'3qix2z4o55',
+													// // // 							statusCode: '400',
+													// // // 							responseParameters: {
+													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
+													// // // 							},
+													// // // 							selectionPattern: '4\\d{2}'
+													// // // 						}
+													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
+													// // // 							if(err){console.log(err)}
+													// // // 							else{console.log(data)}
+													// // // 						})
+													// // // 						let putIntegrationResponse_params_500 = {
+													// // // 							httpMethod:mergedObj.Method,
+													// // // 							resourceId: x,
+													// // // 							restApiId:'3qix2z4o55',
+													// // // 							statusCode: '500',
+													// // // 							responseParameters: {
+													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
+													// // // 							},
+													// // // 							selectionPattern: ''
+													// // // 						}
+													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
+													// // // 							if(err){console.log(err)}
+													// // // 							else{console.log(data)}
+													// // // 						})
+
+
+													// // // 					}
+													// // // 				})
+
+
+												    // // //      }
+											        // // //  })
 										}
 									
 									})
 							}, time);
 						})}
 						
-				         getNewId(x,i)
-			     console.log(arr)
+				         getNewId(x,i)//createResource
+						
+			
 						
 			})
-			
+			console.log(arr)
          // console.log(arr)
 		//   for(let z=0; z<arr.length;z++){
 		// 	console.log(arr[z].path)
