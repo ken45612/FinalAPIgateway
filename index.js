@@ -85,7 +85,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 
 
 				    // // createResource and getNewId
-                    async function getNewId(x,i){
+                 async function getNewId(x,i){
 						let idData = await promiseFn(x,i)
 						x=idData
 						console.log(count)
@@ -95,6 +95,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 						 console.log('after x:',x)
 						if(i<numOfpath){
 							console.log(i,'second')
+							x=idData
 							 getNewId(x,i)
 							
 						}
@@ -126,6 +127,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 													x=count[k].id
 													i++
 													secondPath += count[k].path+'/'
+													console.log('first looooooooooooooooooooooooop!!!!!!!!!!!!!!!')
 													// console.log(k,'i am k in err(if)')
 													// console.log(x,'i am x in err (if)')
 											        // console.log(nameOfPath[i],'i am nameOfPath[i] in err(if)')
@@ -142,9 +144,9 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 											console.log(data,'data in success!!!!!!!!!!!!!!!!!')
 											secondPath += data.pathPart + '/'
 											count.push({
-												path:data.pathPart,
-												id:data.id,
-												parentId:data.parentId
+												path: data.pathPart,
+												id: data.id,
+												parentId: data.parentId
 											})
 											//console.log(data.id)
 											
