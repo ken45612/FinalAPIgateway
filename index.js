@@ -156,151 +156,151 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 											        // console.log(mergedObj.Method)
 													// console.log(mergedObj.requestParameters)
 													// step 2
-											        // // // apig.putMethod({
-												    // // //      restApiId:'3qix2z4o55',
-												    // // //      resourceId:x,
-												    // // //      httpMethod:mergedObj.Method,
-												    // // //      authorizationType:'NONE',
-													// // // 	 requestParameters:mergedObj.requestParameters,
-													// // // 	 apiKeyRequired: true 
-											        // // //      },function(err,data){
-												    // // //      if(err){
-												    // // //        	console.log(err)
-												    // // //      }else{
-												    // // //        	console.log(data)
-													// // // 		// console.log(data.httpMethod)
-													// // // 		// console.log(mergedObj.Method,'i am mergedObj')
-													// // // 		// console.log(x,'i am x')
-													// // // 		//200
-													// // // 		apig.putMethodResponse({
-													// // // 			restApiId:'3qix2z4o55',
-													// // // 			resourceId:x,
-													// // // 			httpMethod:mergedObj.Method,
-													// // // 			statusCode:'200',
-													// // // 			responseModels: {
-													// // // 				"application/json": "ReturnSuccess"
-													// // // 			  /* '<String>': ... */
-													// // // 			},
-													// // // 			responseParameters: {
-													// // // 				"method.response.header.Access-Control-Allow-Origin": false
-													// // // 			}
+											        apig.putMethod({
+												         restApiId:'3qix2z4o55',
+												         resourceId:x,
+												         httpMethod:mergedObj.Method,
+												         authorizationType:'NONE',
+														 requestParameters:mergedObj.requestParameters,
+														 apiKeyRequired: true 
+											             },function(err,data){
+												         if(err){
+												           	console.log(err)
+												         }else{
+												           	console.log(data)
+															// console.log(data.httpMethod)
+															// console.log(mergedObj.Method,'i am mergedObj')
+															// console.log(x,'i am x')
+															//200
+															apig.putMethodResponse({
+																restApiId:'3qix2z4o55',
+																resourceId:x,
+																httpMethod:mergedObj.Method,
+																statusCode:'200',
+																responseModels: {
+																	"application/json": "ReturnSuccess"
+																  /* '<String>': ... */
+																},
+																responseParameters: {
+																	"method.response.header.Access-Control-Allow-Origin": false
+																}
 															
-													// // // 		},function (err,data){
-													// // // 			if(err){
-													// // // 				console.log(err)
-													// // // 			}else{
-													// // // 				console.log(data,'successfully bulid putmethod response')
-													// // // 				// console.log(nameOfPath)
+															},function (err,data){
+																if(err){
+																	console.log(err)
+																}else{
+																	console.log(data,'successfully bulid putmethod response')
+																	// console.log(nameOfPath)
 															
-													// // // 			}
-													// // // 		})
-													// // // 		// 400
-													// // // 		apig.putMethodResponse({
-													// // // 			restApiId:'3qix2z4o55',
-													// // // 			resourceId:x,
-													// // // 			httpMethod:mergedObj.Method,
-													// // // 			statusCode:'400',
-													// // // 			responseModels: {
-													// // // 				"application/json": "ReturnError"
-													// // // 			  /* '<String>': ... */
-													// // // 			},
-													// // // 			responseParameters: {
-													// // // 				"method.response.header.Access-Control-Allow-Origin": false
-													// // // 			}
+																}
+															})
+															// 400
+															apig.putMethodResponse({
+																restApiId:'3qix2z4o55',
+																resourceId:x,
+																httpMethod:mergedObj.Method,
+																statusCode:'400',
+																responseModels: {
+																	"application/json": "ReturnError"
+																  /* '<String>': ... */
+																},
+																responseParameters: {
+																	"method.response.header.Access-Control-Allow-Origin": false
+																}
 															
-													// // // 		},function (err,data){
-													// // // 			if(err){console.log(err)}
-													// // // 			else{console.log(data)}
-													// // // 		})
-													// // // 		// 500
-													// // // 		apig.putMethodResponse({
-													// // // 			restApiId:'3qix2z4o55',
-													// // // 			resourceId:x,
-													// // // 			httpMethod:mergedObj.Method,
-													// // // 			statusCode:'500',
-													// // // 			responseModels: {
-													// // // 				"application/json": "ReturnError"
-													// // // 			  /* '<String>': ... */
-													// // // 			},
-													// // // 			responseParameters: {
-													// // // 				"method.response.header.Access-Control-Allow-Origin": false
-													// // // 			}
+															},function (err,data){
+																if(err){console.log(err)}
+																else{console.log(data)}
+															})
+															// 500
+															apig.putMethodResponse({
+																restApiId:'3qix2z4o55',
+																resourceId:x,
+																httpMethod:mergedObj.Method,
+																statusCode:'500',
+																responseModels: {
+																	"application/json": "ReturnError"
+																  /* '<String>': ... */
+																},
+																responseParameters: {
+																	"method.response.header.Access-Control-Allow-Origin": false
+																}
 															
-													// // // 		},function (err,data){
-													// // // 			if(err){console.log(err)}
-													// // // 			else{console.log(data)}
-													// // // 		})
-													// // // 		console.log(secondPath)
-													// // // 		apig.putIntegration({
-													// // // 					restApiId:'3qix2z4o55',
-													// // // 					resourceId:x,
-													// // // 					httpMethod:mergedObj.Method,
-													// // // 					type:'HTTP',
-													// // // 					connectionType:'VPC_LINK',
-													// // // 					connectionId:vpc_connection_id,
-													// // // 					integrationHttpMethod:mergedObj.Method,
-													// // // 					passthroughBehavior: 'WHEN_NO_MATCH',
-													// // // 					uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+secondPath,
-													// // // 					requestParameters:mergedObj.integration_requestParameters,
-													// // // 					timeoutInMillis: 29000,	
-													// // // 					cacheKeyParameters: []
-													// // // 				},function(err,data){
-													// // // 					if(err){
-													// // // 						console.log(err)
-													// // // 					}else{
-													// // // 						console.log(data,'inside put integration')
-													// // // 						console.log(mergedObj.Method,'inside')
-													// // // 						console.log(x,'inside')
-													// // // 						let putIntegrationResponse_params_200 = {
-													// // // 							httpMethod:mergedObj.Method,
-													// // // 							resourceId: x,
-													// // // 							restApiId:'3qix2z4o55',
-													// // // 							statusCode: '200',
-													// // // 							responseParameters: {
-													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
-													// // // 							},
-													// // // 							selectionPattern: '2\\d{2}'
-													// // // 						}
-													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
-													// // // 							if(err){console.log(err)}
-													// // // 							else{console.log(data)}
-													// // // 						})
-													// // // 						let putIntegrationResponse_params_400 = {
-													// // // 							httpMethod:mergedObj.Method,
-													// // // 							resourceId: x,
-													// // // 							restApiId:'3qix2z4o55',
-													// // // 							statusCode: '400',
-													// // // 							responseParameters: {
-													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
-													// // // 							},
-													// // // 							selectionPattern: '4\\d{2}'
-													// // // 						}
-													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
-													// // // 							if(err){console.log(err)}
-													// // // 							else{console.log(data)}
-													// // // 						})
-													// // // 						let putIntegrationResponse_params_500 = {
-													// // // 							httpMethod:mergedObj.Method,
-													// // // 							resourceId: x,
-													// // // 							restApiId:'3qix2z4o55',
-													// // // 							statusCode: '500',
-													// // // 							responseParameters: {
-													// // // 								"method.response.header.Access-Control-Allow-Origin": "'*'"
-													// // // 							},
-													// // // 							selectionPattern: ''
-													// // // 						}
-													// // // 						apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
-													// // // 							if(err){console.log(err)}
-													// // // 							else{console.log(data)}
-													// // // 						})
+															},function (err,data){
+																if(err){console.log(err)}
+																else{console.log(data)}
+															})
+															console.log(secondPath)
+															apig.putIntegration({
+																		restApiId:'3qix2z4o55',
+																		resourceId:x,
+																		httpMethod:mergedObj.Method,
+																		type:'HTTP',
+																		connectionType:'VPC_LINK',
+																		connectionId:vpc_connection_id,
+																		integrationHttpMethod:mergedObj.Method,
+																		passthroughBehavior: 'WHEN_NO_MATCH',
+																		uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+secondPath,
+																		requestParameters:mergedObj.integration_requestParameters,
+																		timeoutInMillis: 29000,	
+																		cacheKeyParameters: []
+																	},function(err,data){
+																		if(err){
+																			console.log(err)
+																		}else{
+																			console.log(data,'inside put integration')
+																			console.log(mergedObj.Method,'inside')
+																			console.log(x,'inside')
+																			let putIntegrationResponse_params_200 = {
+																				httpMethod:mergedObj.Method,
+																				resourceId: x,
+																				restApiId:'3qix2z4o55',
+																				statusCode: '200',
+																				responseParameters: {
+																					"method.response.header.Access-Control-Allow-Origin": "'*'"
+																				},
+																				selectionPattern: '2\\d{2}'
+																			}
+																			apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
+																				if(err){console.log(err)}
+																				else{console.log(data)}
+																			})
+																			let putIntegrationResponse_params_400 = {
+																				httpMethod:mergedObj.Method,
+																				resourceId: x,
+																				restApiId:'3qix2z4o55',
+																				statusCode: '400',
+																				responseParameters: {
+																					"method.response.header.Access-Control-Allow-Origin": "'*'"
+																				},
+																				selectionPattern: '4\\d{2}'
+																			}
+																			apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
+																				if(err){console.log(err)}
+																				else{console.log(data)}
+																			})
+																			let putIntegrationResponse_params_500 = {
+																				httpMethod:mergedObj.Method,
+																				resourceId: x,
+																				restApiId:'3qix2z4o55',
+																				statusCode: '500',
+																				responseParameters: {
+																					"method.response.header.Access-Control-Allow-Origin": "'*'"
+																				},
+																				selectionPattern: ''
+																			}
+																			apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
+																				if(err){console.log(err)}
+																				else{console.log(data)}
+																			})
 
 
-													// // // 					}
-													// // // 				})
+																		}
+																	})
 
 
-												    // // //      }
-											        // // //  })
+												         }
+											         })
 										}
 									
 									})

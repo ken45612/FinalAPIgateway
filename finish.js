@@ -120,8 +120,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                     parentId: data.parentId
                 })
                 resolve(data.id)
-                console.log(z , 'z inside createPath!!!!!!!!!!!')
-                console.log(nameArr[i].name.length,'nameArr[i].length inside createPath!!!!!!!!!!!')
+               // console.log(z , 'z inside createPath!!!!!!!!!!!')
+                //console.log(nameArr[i].name.length,'nameArr[i].length inside createPath!!!!!!!!!!!')
             }
             })
          })
@@ -134,16 +134,16 @@ const apiConfigure = async (csv_path, base_resource_id) => {
         console.log('main')
         let x = await getBaseId(API_Id)
         console.log(x,'x in main')
-        console.log(i)
+        //console.log(i)
        
         // console.log(nameArr[i].name[i])
         // bulid all path
         for(let i=0;i<numArr.length;i++){
             let z = 0
             
-            console.log(i , 'i in main!!!!!!!!!!!!!!')
-            console.log(nameArr[i].name,'in main!!!!!!!!!')
-            console.log(nameArr[i].name[z],'nameArr[i].name[z] in main!!!!!!!!!')
+            //console.log(i , 'i in main!!!!!!!!!!!!!!')
+           // console.log(nameArr[i].name,'in main!!!!!!!!!')
+          //  console.log(nameArr[i].name[z],'nameArr[i].name[z] in main!!!!!!!!!')
             
             await waitId(x,i,z)
              console.log(`------------level ${i}---------------`)
