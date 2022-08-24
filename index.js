@@ -9,7 +9,6 @@ const path = require("path");
 AWS.config.region = "us-east-1";
 let csv_path = "./staff_api.csv";
 let apig = new AWS.APIGateway();
-let base_resource_id = "4m9s6ygvye"
 let base_url="http://18.207.163.64:3000/api/courses"
 let vpc_connection_id = "upkcbh"
 
