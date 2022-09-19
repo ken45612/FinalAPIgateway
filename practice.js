@@ -8,7 +8,7 @@ const path = require("path");
 const { error } = require("console");
 
 AWS.config.region = "us-east-1";
-let csv_path = "./staff_api_full.csv";
+let csv_path = "./staff_api.csv";
 let apig = new AWS.APIGateway();
 let base_resource_id = "4m9s6ygvye"
 let base_url="http://18.207.163.64:3000/api/courses"
@@ -447,12 +447,12 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 
 
        async function putIntegration(mergedObj,API_Id){
-            return new Promise((resolve) =>{
+            return new Promise(async(resolve) =>{
 
              
                 let x= findPathPos(nameArr,count,mergedObj.Index)
         
-                apig.putIntegration({
+              apig.putIntegration({
                     restApiId:API_Id,
                     resourceId:x,
                     httpMethod:mergedObj.Method,
@@ -469,7 +469,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                     if(err){
                         console.log(err)
                     }else{
-                        console.log(data,'inside put integration')
+                        resolve(data,'inside put integration')
                         let putIntegrationResponse_params_200 = {
                             httpMethod:mergedObj.Method,
                             resourceId:x,

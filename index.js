@@ -382,12 +382,3 @@ apiConfigure(csv_path,base_resource_id).then (
  )
 
 
-
-
-
- 
-
-
-
-
-

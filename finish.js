@@ -78,21 +78,14 @@ const apiConfigure = async (csv_path, base_resource_id) => {
        })
      })
     }  
-       async function getBaseId(API_Id){
+    async function getBaseId(API_Id){
             const defaultResourceId= await getOResourceId(API_Id)
             return defaultResourceId
-       } 
+    } 
        ///////////////////////////////////////////////////////////
     
 
        async function waitId(x,i,z){
-          // console.log(count,'count in waitId')
-           let eachlength= nameArr[i].name.length
-           let prepath = nameArr[i].name[z-1]
-           let preprepath = nameArr[i].name[z-2]
-        //    console.log(eachlength,'i am eachlength')
-        //    console.log(prepath,' i am prepath')
-        //    console.log(preprepath,'i am preprepath')
            console.log('_______________________________________________')
            
                 for(let k=0;k<count.length;k++){
@@ -257,10 +250,12 @@ const apiConfigure = async (csv_path, base_resource_id) => {
            console.log(countMethod)
            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
        }
-      merged_arr.forEach(mergedObj =>{
-         putIntegration(mergedObj,API_Id)
-        //putIntegration(mergedObj,API_Id,i)
-      })
+       for(let g=0;g<merged_arr.length;g++){
+        await putIntegration(merged_arr,API_Id,g)
+        await putIntegrationResponse(merged_arr,API_Id,g)
+        console.log(`---------------current${g}--------------------`)
+        console.log('---------------next--------------------')
+    }
          
       
        
@@ -401,7 +396,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                      }
                 };
 				apig.putMethodResponse(putMethodResponse_params_200, function(err, data) {
-					if (err) console.log(err, err.stack); // an error occurred
+					if (err){console.log(err, err.stack);}  // an error occurred
 					else     console.log(data);           // successful response
 				});
 				let putMethodResponse_params_400 = {
@@ -446,81 +441,90 @@ const apiConfigure = async (csv_path, base_resource_id) => {
     }
 
 
-       async function putIntegration(mergedObj,API_Id){
+       async function putIntegration(merged_arr,API_Id,g){
             return new Promise((resolve) =>{
 
-             
-                let x= findPathPos(nameArr,count,mergedObj.Index)
-        
+          
+                 let x= findPathPos(nameArr,count,g)
+                console.log(merged_arr[g].Method,'Method')
+                console.log(merged_arr[g].path,'path')
                 apig.putIntegration({
                     restApiId:API_Id,
                     resourceId:x,
-                    httpMethod:mergedObj.Method,
+                    httpMethod:merged_arr[g].Method,
                     type:'HTTP',
                     connectionType:'VPC_LINK',
                     connectionId:vpc_connection_id,
-                    integrationHttpMethod:mergedObj.Method,
+                    integrationHttpMethod:merged_arr[g].Method,
                     passthroughBehavior: 'WHEN_NO_MATCH',
-                    uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+mergedObj.path,
-                    requestParameters:mergedObj.integration_requestParameters,
+                    uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+merged_arr[g].path,
+                    requestParameters:merged_arr[g].integration_requestParameters,
                     timeoutInMillis: 29000,	
                     cacheKeyParameters: []
                 },function(err,data){
                     if(err){
-                        console.log(err)
+                        console.log(err,'too many??????????????????????????')
                     }else{
                         console.log(data,'inside put integration')
-                        let putIntegrationResponse_params_200 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '200',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: '2\\d{2}'
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'hihihiihihihihih'}
-                        })
-                        let putIntegrationResponse_params_400 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '400',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: '4\\d{2}'
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'byebyebyebyebyebyebyebyebyebye'}
-                        })
-                        let putIntegrationResponse_params_500 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '500',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: ''
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'hibyehibyehibyehibyehibyehibyehibyehibyehibyehibyehibye'}
-                        })
+                        resolve(data)
+
 
                     }
                 })
+             
+        
                 
               
             
               
         })
     }
+
+        async function putIntegrationResponse(merged_arr,API_Id,g){
+          let x= findPathPos(nameArr,count,g)
+          let putIntegrationResponse_params_200 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '200',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '2\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hihihiihihihihih'}
+        })
+        let putIntegrationResponse_params_400 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '400',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '4\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'byebyebyebyebyebyebyebyebyebye'}
+        })
+        let putIntegrationResponse_params_500 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '500',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: ''
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hibyehibyehibyehibyehibyehibyehibyehibyehibyehibyehibye'}
+        })
+        }
 
 
 		}
@@ -538,3 +542,4 @@ apiConfigure(csv_path,base_resource_id).then (
 
 
 
+// done finish.js
