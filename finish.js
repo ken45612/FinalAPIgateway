@@ -8,11 +8,11 @@ const path = require("path");
 const { error } = require("console");
 
 AWS.config.region = "us-east-1";
-let csv_path = "./staff_api_full.csv";
+let csv_path = "./qd_backend_api2.csv";
 let apig = new AWS.APIGateway();
 let base_resource_id = "4m9s6ygvye"
 let base_url="http://18.207.163.64:3000/api/courses"
-let vpc_connection_id = "u91o6c"
+//let vpc_connection_id = "u91o6c"
 
 const apiConfigure = async (csv_path, base_resource_id) => {
 	let json_arr = await csv().fromFile(csv_path)
@@ -151,8 +151,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                 }
                 }
                 //checking length == 4 may missing check last index
-                if(nameArr[i].name.length == 4 ){
-                    console.log('nameArr[i].name.length == 4')
+                if(nameArr[i].name.length >= 4 ){
+                    console.log('nameArr[i].name.length >= 4')
                     console.log(nameArr[i].name[z-1])
                     // console.log(count[x].path)
                     // console.log(count[x].parentId)
@@ -162,7 +162,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                             x = count[e].id
                         }
                     }
-                    console.log(x,'i am x in ==4')
+                    console.log(x,'i am x in >=4')
                 }
             }
             if( z == nameArr[i].name.length){
@@ -354,6 +354,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
           console.log(x,'x in putMethod')
           console.log(merged_arr[i].Method,'i am merged_arr[i].Method')
           console.log(merged_arr[i].path,'i am merged_arr[i].path')
+          console.log(merged_arr[i].requestParameters,'i am merged_arr[i].requestParameters')
             apig.putMethod({
                 restApiId:API_Id,
                 resourceId:x,
@@ -386,7 +387,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                      restApiId: API_Id, /* required */
                      statusCode: '200', /* required */
                      responseModels: {
-                         "application/json": "ReturnSuccess"
+                         "application/json": "successReturn"
                        /* '<String>': ... */
                      },
                      responseParameters: {
@@ -405,7 +406,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 					restApiId: API_Id, /* required */
 					statusCode: '400', /* required */
 					responseModels: {
-						"application/json": "ReturnError"
+						"application/json": "inlineResponse400"
 						/* '<String>': ... */
 					},
 					responseParameters: {
@@ -415,6 +416,82 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 					}
 				};
 				apig.putMethodResponse(putMethodResponse_params_400, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                let putMethodResponse_params_401 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '401', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+                apig.putMethodResponse(putMethodResponse_params_401, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                let putMethodResponse_params_402 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '402', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_402, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                let putMethodResponse_params_403 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '403', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_403, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                let putMethodResponse_params_404 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '404', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_404, function(err, data) {
 					if (err) console.log(err, err.stack); // an error occurred
 					else     console.log(data);           // successful response
 				});
@@ -453,11 +530,11 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                     resourceId:x,
                     httpMethod:merged_arr[g].Method,
                     type:'HTTP',
-                    connectionType:'VPC_LINK',
-                    connectionId:vpc_connection_id,
+                    //connectionType:'VPC_LINK',
+                    //connectionId:vpc_connection_id,
                     integrationHttpMethod:merged_arr[g].Method,
                     passthroughBehavior: 'WHEN_NO_MATCH',
-                    uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+merged_arr[g].path,
+                    uri:'http://prd-qd-invest-gateway-nlb-b10addd4ff27dfaf.elb.eu-central-1.amazonaws.com:3000'+merged_arr[g].path,
                     requestParameters:merged_arr[g].integration_requestParameters,
                     timeoutInMillis: 29000,	
                     cacheKeyParameters: []

@@ -5,28 +5,39 @@ const parser = require("csv-parse");
 const { isAsyncFunction } = require("util/types");
 const { isFunction } = require("util");
 const path = require("path");
+const { error } = require("console");
 
 AWS.config.region = "us-east-1";
-let csv_path = "./staff_api.csv";
+let csv_path = "./qd_backend_api2.csv";
 let apig = new AWS.APIGateway();
+let base_resource_id = "4m9s6ygvye"
 let base_url="http://18.207.163.64:3000/api/courses"
-let vpc_connection_id = "upkcbh"
-
+//let vpc_connection_id = "u91o6c"
+// copy of finish.js
 const apiConfigure = async (csv_path, base_resource_id) => {
 	let json_arr = await csv().fromFile(csv_path)
 	let merged_arr = []
 	let lastMethod = ""
 	let lastPath = ""
 	let curObj = {}
-    let arr = []
+    let nameArr = []
+    let numArr =[]
 	let count =[]
+    let countMethod =[]
+    let x=''
+    let i= 0
+    let mergedall=[]
+
 
 	const API_Id = '3qix2z4o55'
 	let path_arr = []
-	json_arr.forEach( jsonObj => {
-		if (!((jsonObj.Method == lastMethod) && (jsonObj.path == lastPath))) {
+    const jsonData = async (json_arr)=>{
+        let i=0
+        for(const jsonObj of json_arr){
+            if (!((jsonObj.Method == lastMethod) && (jsonObj.path == lastPath))) {
 			merged_arr = (Object.keys(curObj).length === 0) ? [] :  merged_arr.concat(curObj)
 			curObj = {
+                Index:i,
 				Method: jsonObj.Method,
 				path: jsonObj.path,
 				requestParameters: {},
@@ -38,7 +49,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 			}
 			lastMethod = jsonObj.Method
 			lastPath = jsonObj.path
-            
+            i++
             //console.log( jsonObj.req)
            // console.log(jsonObj.Param_Name)
 			//console.log(jsonObj.requestParameters[`method.request.${jsonObj.req}.${jsonObj.Param_Name}`])
@@ -47,338 +58,489 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 			curObj.requestParameters[`method.request.${jsonObj.req}.${jsonObj.Param_Name}`] = false
 			curObj.integration_requestParameters[`integration.request.${jsonObj.req}.${jsonObj.Param_Name}`] = `method.request.${jsonObj.req}.${jsonObj.Param_Name}`
 		}
+        }
+    }
+	jsonData(json_arr)
+	//console.log('i am MERRRRRRRRRRRRRRRRRRRR',merged_arr)
 	
-	})
+	
+    function getOResourceId (API_Id){
+        return new Promise(resolve =>{
+        apig.getResources({
+        restApiId:API_Id
+       },function (err,data) {
+         if(err){console.log('Get root resource failed:\n',err) 
+        }
+         else{  
+            console.log( data)
+            resolve(data.items[0].id)
+        }
+       })
+     })
+    }  
+    async function getBaseId(API_Id){
+            const defaultResourceId= await getOResourceId(API_Id)
+            return defaultResourceId
+    } 
+       ///////////////////////////////////////////////////////////
+    
 
-	// merged_arr = merged_arr.concat(curObj)
-	// console.log("REE", merged_arr)
-	apig.getResources({
-		restApiId:'3qix2z4o55'
-	},function(err,data){
-		if(err){console.log('Get root resource failed:\n',err)}
-		else{//console.log(data)  //{ items: [ { id: 'in5w82n4dj', path: '/' } ] }
-			//console.log(data.items[0].id) //in5w82n4dj
-			
-			    merged_arr.forEach(mergedObj => {
-				console.log(mergedObj)
-				let secondPath ='/'
+       async function waitId(x,i,z){
+           console.log('_______________________________________________')
+           
+                for(let k=0;k<count.length;k++){
+                    if(z<=2){
+                          if(nameArr[i].name[z]==count[k].path && count[k].parentId == x ){
+                        x=count[k].id
+                        z++}
+                    }  
+              }
+            
+            console.log(x, 'x z<=2')
+            console.log(z , 'z z<=2')
+            if(z>=3){
+                for(;z<nameArr[i].name.length;){
+                let templastid =''
+                let templastlastid=''
+                let templastParentid=''
+                let currentParentid =''
+                let currentId =''
+                for(let g=0;g<count.length;g++){
+                    if(nameArr[i].name[z-3] == count[g].path){
+                        templastlastid = count[g].id
+                    }
+                    if(nameArr[i].name[z-2] == count[g].path && count[g].parentId == templastlastid){
+                        templastid = count[g].id
+                        templastParentid = count[g].parentId
+                    }
+                    if(nameArr[i].name[z-1] == count[g].path && count[g].parentId == templastid){
+                        currentParentid = count[g].parentId
+                        currentId = count[g].id
+                    }
+                }
+                console.log(currentId,'i am currentId')
+                console.log(currentParentid,'i am currentParentid')
+                console.log(templastParentid,'i am templastParentid')
+                console.log(templastlastid,'i am templastlastid')
+
+                if(currentParentid == templastid && templastParentid == templastlastid){
+                    x= currentId
+                    z++
+                    console.log(x,'Inside first if')
+                    console.log(z,'Inside first if')
+                    console.log('Inside first if')
+                }else{
+                      for(let t=0;t<count.length;t++){
+                        if(currentId == count[t].id){
+                            console.log('Inside else for if')
+
+                            x=count[t].id
+                            z++
+                            console.log(x,' x in else for if loop')
+                            console.log(z,' z in else for if loop')
+                        }
+                      }
+                    if(x != currentId){
+                        console.log('Inside else if')
+                         x= templastid
+                    z--
+                    }
+                    // console.log(x,'x in false values')
+                    // console.log(z,'z in false values')
+                    break
+                }
+                }
+                //checking length == 4 may missing check last index
+                if(nameArr[i].name.length >= 4 ){
+                    console.log('nameArr[i].name.length >= 4')
+                    console.log(nameArr[i].name[z-1])
+                    // console.log(count[x].path)
+                    // console.log(count[x].parentId)
+                    for(let e=0;e<count.length;e++){
+                        if(nameArr[i].name[z-1] == count[e].path && count[e].parentId == x){
+                            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                            x = count[e].id
+                        }
+                    }
+                    console.log(x,'i am x in >=4')
+                }
+            }
+            if( z == nameArr[i].name.length){
+                let exist =0
+                console.log(count,'last')
+                console.log(x,'if x checking')
+                for(let p=0;p<count.length;p++){
+                    console.log(nameArr[i].name[z-1],'last nameArr[i].name[z-1]')
+                    if(nameArr[i].name[z-1] == count[p].path && count[p].id == x){
+                        exist++
+                    }
+                }
+                if(exist == 0){ z--}
+            }
+             console.log(x,'last x')
+             console.log(z,'last z ')
+            //   console.log(x,'x after first for loop')
+            //   console.log(z,'z after first for loop')
+             for(;z < nameArr[i].name.length;z++){
+            //  console.log(x,'@______@')
+            //  console.log(z,'@@')
+             x = await createPath(x,i,z)
+                          
+         }
+       }
+       
+
+
+       function createPath(x,i,z){
+        return new Promise(async(resolve) =>{
+            
+            apig.createResource({
+                restApiId:API_Id,
+                parentId:x,
+                pathPart:nameArr[i].name[z]
+            }, function (err,data){
+                if(err){
+                console.log(err)
+                console.log(count,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+             
+            }else{
+                console.log(data)
+                count.push({
+                    path:data.pathPart,
+                    id: data.id,
+                    parentId: data.parentId
+                })
+                resolve(data.id)
+               // console.log(z , 'z inside createPath!!!!!!!!!!!')
+                //console.log(nameArr[i].name.length,'nameArr[i].length inside createPath!!!!!!!!!!!')
+            }
+            })
+         })
+        // console.log(await promise, "@@>?")
+        // return promise
+       }
+      
+
+      async function main(){
+        console.log('main')
+        let x = await getBaseId(API_Id)
+        console.log(x,'x in main')
+        console.log(merged_arr)
+        //console.log(i)
+        // console.log(mergedall,'i am mergedall')
+        // console.log(nameArr,'i am nameArr')
+    
+        // console.log(nameArr[i].name[i])
+        // bulid all path
+        for(let i=0;i<numArr.length;i++){
+            let z = 0
+            console.log(i , 'i in main!!!!!!!!!!!!!!')
+           console.log(nameArr[i].name,'in main!!!!!!!!!')
+           console.log(nameArr[i].name[z],'nameArr[i].name[z] in main!!!!!!!!!')
+            await waitId(x,i,z)
+             console.log(`------------level ${i}---------------`)
+        }
+    //     // putMethod
+    //   ////////////////////////////////////////////////////////////////////////////////
+
+       
+       for(let i=0;i<merged_arr.length;i++){
+
+           await putMethod(merged_arr,API_Id,i)
+           await putMethodResponse(merged_arr,API_Id,i)
+           console.log(countMethod)
+           console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+       }
+       for(let g=0;g<merged_arr.length;g++){
+        await putIntegration(merged_arr,API_Id,g)
+        await putIntegrationResponse(merged_arr,API_Id,g)
+        console.log(`---------------current${g}--------------------`)
+        console.log('---------------next--------------------')
+    }
+         
+      
+       
+       
+
+
+
+      //////////////////////////////////////////////////////////////////////////////////
+
+   
+      }
+       
+      main()
+   
+       let o=0
+       merged_arr.forEach(mergedObj =>{
+        console.log(mergedObj, 'i am mergedObj')
+        let secondPath ='/'
+        
 				var fields = mergedObj.path.split('/')
 		        const nameOfPath = fields.filter(element=>{
 			    return element !== ''})
                 var numOfpath =nameOfPath.length
-		        console.log(nameOfPath)
-		        console.log(numOfpath)
-				let defaultResourceId= data.items[0].id
-				let x= defaultResourceId
-                let i = 0;
-				let z=0;
-				
-				console.log(mergedObj.Method)
-				
-                
-                arr.push({path:nameOfPath})
-                z++
-		
+                nameArr.push({name:nameOfPath ,level:o})
+                numArr.push({num:numOfpath})
+                mergedall.push({path:mergedObj.path, Method:mergedObj.Method})
+            o++
+       })
 
+       function findPathPos(nameArr,count,i){
+        console.log('_______________________________________________')
+        let currentIndex = nameArr[i].name.length-1
+        let lastIndex = nameArr[i].name.length-2
+        let lastlastIndex = nameArr[i].name.length-3
+        let last =[]
+        let lastlast=[]
+        let current =[]
+        let z=0
+        let x=[]
+         
+        if(nameArr[i].name.length==1){
+            for(let k=0;k<count.length;k++){
+                if(nameArr[i].name[currentIndex] == count[k].path){
+                    current.push(count[k].id) 
+                }
+            }
+            x= current[0]
+        }
 
+        if(nameArr[i].name.length>=2){
+                   for(let k=0;k<count.length;k++){
+           if(nameArr[i].name[currentIndex] == count[k].path ){
+                     current.push({currentId:count[k].id, currentParentId:count[k].parentId})
+                   
+           }
+           if(nameArr[i].name[lastIndex] == count[k].path){
+                    last.push({lastId:count[k].id, lastParentId:count[k].parentId})
+           }   
+           if(nameArr[i].name[lastlastIndex] == count[k].path){
+                    lastlast.push({lastlastId:count[k].id} )
+           }    
+        }
+        console.log(current,'i am current')
+        console.log(last,'i am last')
+        console.log(lastlast,'i am lastlast')
+       //console.log(current.length,'i am current[0].currentParentId.length')
+        if(nameArr[i].name.length == 2){
+            for(let j=0;j<current.length;j++){
+               for(let h=0;h<last.length;h++){
+                 if(current[j].currentParentId == last[h].lastId){
+                    x = current[j].currentId
+                 }
+               }
+            }
+        }
+        if(nameArr[i].name.length >= 3){
+            //let correctlastId =''
+          for(let b=0;b<current.length;b++){
+            for(let a=0;a<last.length;a++){
+                for(let c=0;c<lastlast.length;c++){
+                        if(lastlast[c].lastlastId== last[a].lastParentId && current[b].currentParentId == last[a].lastId)
+                 { x = current[b].currentId}
+                }
+            }
+          }
+        }
+     }
+        //console.log(x,'x got grabed')
+    return x
+ }
+       
+        // k==i     
+        function putMethod (merged_arr,API_Id,i){
+            return new Promise((resolve)=>{
+          let x= findPathPos(nameArr,count,i)
+          console.log(x,'x in putMethod')
+          console.log(merged_arr[i].Method,'i am merged_arr[i].Method')
+          console.log(merged_arr[i].path,'i am merged_arr[i].path')
+            apig.putMethod({
+                restApiId:API_Id,
+                resourceId:x,
+                httpMethod:merged_arr[i].Method,
+                authorizationType:'NONE',
+                requestParameters:merged_arr[i].requestParameters,
+                apiKeyRequired: true
+            },function(err,data){
+                if(err){console.log(err)}
+                else{console.log(data)
+                     countMethod.push({
+                    path:merged_arr[i].path,
+                    method:merged_arr[i].Method
+                    })
+                    resolve(data)
+                }
+              })
+            
+        })
+     
+       }
 
-
-				    // // createResource and getNewId
-                 async function getNewId(x,i){
-						let idData = await promiseFn(x,i)
-						x=idData
-						console.log(count)
-						i++
-						console.log(numOfpath)
-						console.log(i,'first')
-						 console.log('after x:',x)
-						if(i<numOfpath){
-							console.log(i,'second')
-							x=idData
-							 getNewId(x,i)
-							
-						}
-						// This line below insert putMethod
-
+       async function putMethodResponse(merged_arr,API_Id,i){
+        //await putMethod(merged_arr,API_Id,Id,k)
+         let x = findPathPos(nameArr,count,i)
+      
+                 let putMethodResponse_params_200 = {
+                     httpMethod: merged_arr[i].Method, /* required */
+                     resourceId: x, /* required */
+                     restApiId: API_Id, /* required */
+                     statusCode: '200', /* required */
+                     responseModels: {
+                         "application/json": "ReturnSuccess"
+                       /* '<String>': ... */
+                     },
+                     responseParameters: {
+                         "method.response.header.Access-Control-Allow-Origin": false
+                     //   '<String>': true || false,
+                       /* '<String>': ... */
+                     }
+                };
+				apig.putMethodResponse(putMethodResponse_params_200, function(err, data) {
+					if (err){console.log(err, err.stack);}  // an error occurred
+					else     console.log(data);           // successful response
+				});
+				let putMethodResponse_params_400 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '400', /* required */
+					responseModels: {
+						"application/json": "ReturnError"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
 					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_400, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+				let putMethodResponse_params_500 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '500', /* required */
+					responseModels: {
+						"application/json": "ReturnError"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_500, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+        
+    }
 
+
+       async function putIntegration(merged_arr,API_Id,g){
+            return new Promise((resolve) =>{
+
+          
+                 let x= findPathPos(nameArr,count,g)
+                console.log(merged_arr[g].Method,'Method')
+                console.log(merged_arr[g].path,'path')
+                apig.putIntegration({
+                    restApiId:API_Id,
+                    resourceId:x,
+                    httpMethod:merged_arr[g].Method,
+                    type:'HTTP',
+                    //connectionType:'VPC_LINK',
+                    //connectionId:vpc_connection_id,
+                    integrationHttpMethod:merged_arr[g].Method,
+                    passthroughBehavior: 'WHEN_NO_MATCH',
+                    uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+merged_arr[g].path,
+                    requestParameters:merged_arr[g].integration_requestParameters,
+                    timeoutInMillis: 29000,	
+                    cacheKeyParameters: []
+                },function(err,data){
+                    if(err){
+                        console.log(err,'too many??????????????????????????')
+                    }else{
+                        console.log(data,'inside put integration')
+                        resolve(data)
+
+
+                    }
+                })
+             
+        
                 
+              
+            
+              
+        })
+    }
 
-					 function promiseFn(x,i,time=2000){
-						return new Promise((resolve)=>{
-							setTimeout(() =>  {
-								apig.createResource({
-										restApiId:'3qix2z4o55',
-										parentId:x,
-										pathPart:nameOfPath[i]
-									},function (err,data){
-										if(err){
-										    console.log(err)
-									        console.log(count,'i am err')
-											console.log(nameOfPath)
-											console.log(i)
-											console.log(nameOfPath[i])
-											console.log(count[0].path)
-											console.log(count.length,'i am count.length in err')
-										
-											for(let k=0;k<count.length;k++){
-												if(nameOfPath[i]==count[k].path){
-													x=count[k].id
-													i++
-													secondPath += count[k].path+'/'
-													console.log('first looooooooooooooooooooooooop!!!!!!!!!!!!!!!')
-													// console.log(k,'i am k in err(if)')
-													// console.log(x,'i am x in err (if)')
-											        // console.log(nameOfPath[i],'i am nameOfPath[i] in err(if)')
-													getNewId(x,i)
-												}else{
-                                                      //console.log(err)
-													  
-												}
-											}
-										
-										}
-										else{
-											
-											console.log(data,'data in success!!!!!!!!!!!!!!!!!')
-											secondPath += data.pathPart + '/'
-											count.push({
-												path: data.pathPart,
-												id: data.id,
-												parentId: data.parentId
-											})
-											//console.log(data.id)
-											
-											resolve(x=data.id)
-                                                    // console.log(x,'hihihihihi')
-											        // console.log(data.pathPart,'byebyebyebye')
-											        // console.log(mergedObj.Method)
-													// console.log(mergedObj.requestParameters)
-													// step 2
-											        apig.putMethod({
-												         restApiId:'3qix2z4o55',
-												         resourceId:x,
-												         httpMethod:mergedObj.Method,
-												         authorizationType:'NONE',
-														 requestParameters:mergedObj.requestParameters,
-														 apiKeyRequired: true 
-											             },function(err,data){
-												         if(err){
-												           	console.log(err)
-												         }else{
-												           	console.log(data)
-															// console.log(data.httpMethod)
-															// console.log(mergedObj.Method,'i am mergedObj')
-															// console.log(x,'i am x')
-															//200
-															apig.putMethodResponse({
-																restApiId:'3qix2z4o55',
-																resourceId:x,
-																httpMethod:mergedObj.Method,
-																statusCode:'200',
-																responseModels: {
-																	"application/json": "ReturnSuccess"
-																  /* '<String>': ... */
-																},
-																responseParameters: {
-																	"method.response.header.Access-Control-Allow-Origin": false
-																}
-															
-															},function (err,data){
-																if(err){
-																	console.log(err)
-																}else{
-																	console.log(data,'successfully bulid putmethod response')
-																	// console.log(nameOfPath)
-															
-																}
-															})
-															// 400
-															apig.putMethodResponse({
-																restApiId:'3qix2z4o55',
-																resourceId:x,
-																httpMethod:mergedObj.Method,
-																statusCode:'400',
-																responseModels: {
-																	"application/json": "ReturnError"
-																  /* '<String>': ... */
-																},
-																responseParameters: {
-																	"method.response.header.Access-Control-Allow-Origin": false
-																}
-															
-															},function (err,data){
-																if(err){console.log(err)}
-																else{console.log(data)}
-															})
-															// 500
-															apig.putMethodResponse({
-																restApiId:'3qix2z4o55',
-																resourceId:x,
-																httpMethod:mergedObj.Method,
-																statusCode:'500',
-																responseModels: {
-																	"application/json": "ReturnError"
-																  /* '<String>': ... */
-																},
-																responseParameters: {
-																	"method.response.header.Access-Control-Allow-Origin": false
-																}
-															
-															},function (err,data){
-																if(err){console.log(err)}
-																else{console.log(data)}
-															})
-															console.log(secondPath)
-															apig.putIntegration({
-																		restApiId:'3qix2z4o55',
-																		resourceId:x,
-																		httpMethod:mergedObj.Method,
-																		type:'HTTP',
-																		connectionType:'VPC_LINK',
-																		connectionId:vpc_connection_id,
-																		integrationHttpMethod:mergedObj.Method,
-																		passthroughBehavior: 'WHEN_NO_MATCH',
-																		uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+secondPath,
-																		requestParameters:mergedObj.integration_requestParameters,
-																		timeoutInMillis: 29000,	
-																		cacheKeyParameters: []
-																	},function(err,data){
-																		if(err){
-																			console.log(err)
-																		}else{
-																			console.log(data,'inside put integration')
-																			console.log(mergedObj.Method,'inside')
-																			console.log(x,'inside')
-																			let putIntegrationResponse_params_200 = {
-																				httpMethod:mergedObj.Method,
-																				resourceId: x,
-																				restApiId:'3qix2z4o55',
-																				statusCode: '200',
-																				responseParameters: {
-																					"method.response.header.Access-Control-Allow-Origin": "'*'"
-																				},
-																				selectionPattern: '2\\d{2}'
-																			}
-																			apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
-																				if(err){console.log(err)}
-																				else{console.log(data)}
-																			})
-																			let putIntegrationResponse_params_400 = {
-																				httpMethod:mergedObj.Method,
-																				resourceId: x,
-																				restApiId:'3qix2z4o55',
-																				statusCode: '400',
-																				responseParameters: {
-																					"method.response.header.Access-Control-Allow-Origin": "'*'"
-																				},
-																				selectionPattern: '4\\d{2}'
-																			}
-																			apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
-																				if(err){console.log(err)}
-																				else{console.log(data)}
-																			})
-																			let putIntegrationResponse_params_500 = {
-																				httpMethod:mergedObj.Method,
-																				resourceId: x,
-																				restApiId:'3qix2z4o55',
-																				statusCode: '500',
-																				responseParameters: {
-																					"method.response.header.Access-Control-Allow-Origin": "'*'"
-																				},
-																				selectionPattern: ''
-																			}
-																			apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
-																				if(err){console.log(err)}
-																				else{console.log(data)}
-																			})
+        async function putIntegrationResponse(merged_arr,API_Id,g){
+          let x= findPathPos(nameArr,count,g)
+          let putIntegrationResponse_params_200 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '200',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '2\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hihihiihihihihih'}
+        })
+        let putIntegrationResponse_params_400 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '400',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '4\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'byebyebyebyebyebyebyebyebyebye'}
+        })
+        let putIntegrationResponse_params_500 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '500',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: ''
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hibyehibyehibyehibyehibyehibyehibyehibyehibyehibyehibye'}
+        })
+        }
 
 
-																		}
-																	})
-
-
-												         }
-											         })
-										}
-									
-									})
-							}, time);
-						})}
-						
-				         getNewId(x,i)//createResource
-						
-			
-						
-			})
-			console.log(arr)
-         // console.log(arr)
-		//   for(let z=0; z<arr.length;z++){
-		// 	console.log(arr[z].path)
-		// 	 let firstElement = arr[z].path.shift()
-		// 	 //console.log(firstElement)
-		// 	 if(arr[z].path.length == 0)
-		// 	 { console.log(`${firstElement} is the only path`)}
-		// 	while (arr[z].path.length !=0) {
-		// 		let secondElement = arr[z].path.shift()
-		// 		console.log(`${secondElement} --> ${firstElement}`)
-		// 	    firstElement = secondElement
-		// 	}
-			
-		//   }
-        //   for(let z=0; z<arr.length;z++){
-		// 	console.log(arr[z].path)
-		// 	let firstElement=arr[z].path.shift()
-        //     if(count[firstElement]){
-        //          count[firstElement]+=1
-		// 	}else{
-		// 		count[firstElement]=1
-		// 	}
-		//   }
-		// 	console.log(count)
-
-		// 	console.log(arr)
 		}
-
-		
-				
-			})
-		
-		}
-	
-
-		//console.log(mergedObj.path,"i am mergedObj.path")
-		
-		
-		// var fields = mergedObj.path.split('/')
-		// const nameOfPath = fields.filter(element=>{
-		// 	return element !== ''})
-        // var numOfpath =nameOfPath.length
-		//  console.log(nameOfPath[0],nameOfPath[1],nameOfPath[2])
-		//  console.log(numOfpath)
-        //   let defaultResourceId='in5w82n4dj'
-		  
-		//  for(let i= 0;i<numOfpath;i++){
-		// 	let x =defaultResourceId
-		// 	console.log(x,"begin")
-		// 	apig.createResource({
-		// 		restApiId:'h0dx704i28',
-		// 		parentId:x,
-		// 		pathPart:nameOfPath[i]
-		// 	},function (err,data) {
-		// 		if(err){console.log(`The '${nameOfPath[i]}' resource setup failed:\n`,err)}
-		// 		else{
-		// 			console.log(data)
-		// 			console.log(data.id,"dataId")
-		// 			x=data.id
-		// 			console.log(x,"end")
-		// 		}
-		// 	})
-		//  }
-
-
 apiConfigure(csv_path,base_resource_id).then (
 
  )
 
 
+
+
+
+ 
+
+
+
+
+
+// done finish.js
