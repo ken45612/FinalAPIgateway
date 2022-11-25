@@ -7,12 +7,13 @@ const { isFunction } = require("util");
 const path = require("path");
 const { error } = require("console");
 
-AWS.config.region = "us-east-1";
-let csv_path = "./staff_api.csv";
+AWS.config.region = "ap-southeast-1";// <----change AWS region if necessary
+let csv_path = "./qd_backend_api2.csv"; // <----change csv path
 let apig = new AWS.APIGateway();
-let base_resource_id = "4m9s6ygvye"
-let base_url="http://18.207.163.64:3000/api/courses"
-let vpc_connection_id = "u91o6c"
+let base_resource_id = "xb9v0gg9de"// <---- change base_resource_id
+let base_url="http://prd-qd-invest-gateway-nlb-b10addd4ff27dfaf.elb.eu-central-1.amazonaws.com:3000"// <---- change base_url
+const API_Id = '1byahjzf2l' // <----change API_Id
+let vpc_connection_id = "kkazku"// <----change vpc_connection_id
 
 const apiConfigure = async (csv_path, base_resource_id) => {
 	let json_arr = await csv().fromFile(csv_path)
@@ -24,13 +25,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
     let numArr =[]
 	let count =[]
     let countMethod =[]
-    let x=''
-    let i= 0
     let mergedall=[]
 
-
-	const API_Id = '3qix2z4o55'
-	let path_arr = []
     const jsonData = async (json_arr)=>{
         let i=0
         for(const jsonObj of json_arr){
@@ -43,7 +39,6 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 				requestParameters: {},
 				integration_requestParameters: {},
 				CORS: jsonObj.CORS,
-				api_id: jsonObj.api_id,
 				Dev_resources_id: jsonObj.Dev_resources_id,
 				parentID: base_resource_id
 			}
@@ -62,7 +57,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
     }
 	jsonData(json_arr)
 	//console.log('i am MERRRRRRRRRRRRRRRRRRRR',merged_arr)
-	
+    merged_arr = (Object.keys(curObj).length === 0) ? [] :  merged_arr.concat(curObj)
+    console.log(merged_arr)
 	
     function getOResourceId (API_Id){
         return new Promise(resolve =>{
@@ -83,7 +79,6 @@ const apiConfigure = async (csv_path, base_resource_id) => {
             return defaultResourceId
     } 
        ///////////////////////////////////////////////////////////
-    
 
        async function waitId(x,i,z){
            console.log('_______________________________________________')
@@ -95,9 +90,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                         z++}
                     }  
               }
-            
-            console.log(x, 'x z<=2')
-            console.log(z , 'z z<=2')
+           // console.log(x, 'x z<=2')   for error checking
+           //console.log(z , 'z z<=2')   for error checking
             if(z>=3){
                 for(;z<nameArr[i].name.length;){
                 let templastid =''
@@ -118,30 +112,30 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                         currentId = count[g].id
                     }
                 }
-                console.log(currentId,'i am currentId')
-                console.log(currentParentid,'i am currentParentid')
-                console.log(templastParentid,'i am templastParentid')
-                console.log(templastlastid,'i am templastlastid')
+                //console.log(currentId,'i am currentId')               for error checking
+                //console.log(currentParentid,'i am currentParentid')   for error checking
+                //console.log(templastParentid,'i am templastParentid') for error checking
+                //console.log(templastlastid,'i am templastlastid')     for error checking    
 
                 if(currentParentid == templastid && templastParentid == templastlastid){
                     x= currentId
                     z++
-                    console.log(x,'Inside first if')
-                    console.log(z,'Inside first if')
-                    console.log('Inside first if')
+                    //console.log(x,'Inside first if')                  for error checking
+                    //console.log(z,'Inside first if')                  for error checking
+                    //console.log('Inside first if')                    for error checking
                 }else{
                       for(let t=0;t<count.length;t++){
                         if(currentId == count[t].id){
-                            console.log('Inside else for if')
+                            //console.log('Inside else for if')         for error checking
 
                             x=count[t].id
                             z++
-                            console.log(x,' x in else for if loop')
-                            console.log(z,' z in else for if loop')
+                            //console.log(x,' x in else for if loop')   for error checking
+                            //console.log(z,' z in else for if loop')   for error checking
                         }
                       }
                     if(x != currentId){
-                        console.log('Inside else if')
+                        //console.log('Inside else if')                 for error checking
                          x= templastid
                     z--
                     }
@@ -151,24 +145,25 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                 }
                 }
                 //checking length == 4 may missing check last index
-                if(nameArr[i].name.length == 4 ){
-                    console.log('nameArr[i].name.length == 4')
-                    console.log(nameArr[i].name[z-1])
-                    // console.log(count[x].path)
-                    // console.log(count[x].parentId)
+                if(nameArr[i].name.length >= 4 ){
+                    //console.log('nameArr[i].name.length >= 4')        for error checking
+                    //console.log(nameArr[i].name[z-1])                 for error checking
+                    //console.log(x,'i am x in >=4')                    for error checking
+                    // console.log(count[x].path)                       for error checking
+                    // console.log(count[x].parentId)                   for error checking
                     for(let e=0;e<count.length;e++){
                         if(nameArr[i].name[z-1] == count[e].path && count[e].parentId == x){
-                            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                            //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!') for error checking
                             x = count[e].id
                         }
                     }
-                    console.log(x,'i am x in ==4')
+                    //console.log(x,'i am x in >=4')                    for error checking
                 }
             }
             if( z == nameArr[i].name.length){
                 let exist =0
-                console.log(count,'last')
-                console.log(x,'if x checking')
+                //console.log(count,'last')                             for error checking
+                //console.log(x,'if x checking')                        for error checking
                 for(let p=0;p<count.length;p++){
                     if(nameArr[i].name[z-1] == count[p].path && count[p].id == x){
                         exist++
@@ -176,19 +171,17 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                 }
                 if(exist == 0){ z--}
             }
-             console.log(x,'last x')
-             console.log(z,'last z ')
-            //   console.log(x,'x after first for loop')
-            //   console.log(z,'z after first for loop')
+             //console.log(x,'last x')                                  for error checking
+             //console.log(z,'last z ')                                 for error checking
+             //console.log(nameArr[i].name[z],'path name to bulid')     for error checking
+            //   console.log(x,'x after first for loop')                for error checking
+            //   console.log(z,'z after first for loop')                for error checking
              for(;z < nameArr[i].name.length;z++){
-            //  console.log(x,'@______@')
-            //  console.log(z,'@@')
-             x = await createPath(x,i,z)
-                          
+            //  console.log(x,'@______@')                               for error checking
+            //  console.log(z,'@@')                                     for error checking
+             x = await createPath(x,i,z)  
          }
        }
-       
-
 
        function createPath(x,i,z){
         return new Promise(async(resolve) =>{
@@ -233,36 +226,27 @@ const apiConfigure = async (csv_path, base_resource_id) => {
         // bulid all path
         for(let i=0;i<numArr.length;i++){
             let z = 0
-            console.log(i , 'i in main!!!!!!!!!!!!!!')
-           console.log(nameArr[i].name,'in main!!!!!!!!!')
-           console.log(nameArr[i].name[z],'nameArr[i].name[z] in main!!!!!!!!!')
+            //console.log(i , 'i in main!!!!!!!!!!!!!!')                            for error checking
+            //console.log(nameArr[i].name,'in main!!!!!!!!!')                       for error checking
+            //console.log(nameArr[i].name[z],'nameArr[i].name[z] in main!!!!!!!!!') for error checking
             await waitId(x,i,z)
              console.log(`------------level ${i}---------------`)
         }
     //     // putMethod
     //   ////////////////////////////////////////////////////////////////////////////////
 
-       
        for(let i=0;i<merged_arr.length;i++){
-
-           await putMethod(merged_arr,API_Id,i)
+           //await putMethod(merged_arr,API_Id,i)
            await putMethodResponse(merged_arr,API_Id,i)
            console.log(countMethod)
-           console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+           console.log(`!!!!!!!!!!!!!!!current${i}!!!!!!!!!!!!!!!`)
        }
-       merged_arr.forEach(mergedObj =>{
-           putIntegration(mergedObj,API_Id)
-       })
-         
-      
-       
-       
-
-
-
-      //////////////////////////////////////////////////////////////////////////////////
-
-   
+       for(let g=0;g<merged_arr.length;g++){
+        //await putIntegration(merged_arr,API_Id,g)
+        await putIntegrationResponse(merged_arr,API_Id,g)
+        console.log(`---------------current${g}--------------------`)
+        console.log('---------------next--------------------')
+    }
       }
        
       main()
@@ -270,8 +254,6 @@ const apiConfigure = async (csv_path, base_resource_id) => {
        let o=0
        merged_arr.forEach(mergedObj =>{
         console.log(mergedObj, 'i am mergedObj')
-        let secondPath ='/'
-        
 				var fields = mergedObj.path.split('/')
 		        const nameOfPath = fields.filter(element=>{
 			    return element !== ''})
@@ -283,7 +265,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
        })
 
        function findPathPos(nameArr,count,i){
-        console.log('_______________________________________________')
+        //console.log('_______________________________________________')
         let currentIndex = nameArr[i].name.length-1
         let lastIndex = nameArr[i].name.length-2
         let lastlastIndex = nameArr[i].name.length-3
@@ -315,10 +297,10 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                     lastlast.push({lastlastId:count[k].id} )
            }    
         }
-        console.log(current,'i am current')
-        console.log(last,'i am last')
-        console.log(lastlast,'i am lastlast')
-       //console.log(current.length,'i am current[0].currentParentId.length')
+        //console.log(current,'i am current')               for error checking  
+        //console.log(last,'i am last')                     for error checking  
+        //console.log(lastlast,'i am lastlast')             for error checking
+       //console.log(current.length,'i am current[0].currentParentId.length')   for error checking
         if(nameArr[i].name.length == 2){
             for(let j=0;j<current.length;j++){
                for(let h=0;h<last.length;h++){
@@ -343,14 +325,19 @@ const apiConfigure = async (csv_path, base_resource_id) => {
         //console.log(x,'x got grabed')
     return x
  }
-       
+ function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  } 
+  
         // k==i     
-        function putMethod (merged_arr,API_Id,i){
-            return new Promise((resolve)=>{
-          let x= findPathPos(nameArr,count,i)
+        function putMethod (merged_arr,API_Id,i,time=1000){
+            return new Promise(async(resolve)=>{
+                setTimeout(() => {
+                     let x= findPathPos(nameArr,count,i)
           console.log(x,'x in putMethod')
           console.log(merged_arr[i].Method,'i am merged_arr[i].Method')
           console.log(merged_arr[i].path,'i am merged_arr[i].path')
+          console.log(merged_arr[i].requestParameters,'i am merged_arr[i].requestParameters')
             apig.putMethod({
                 restApiId:API_Id,
                 resourceId:x,
@@ -368,6 +355,8 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                     resolve(data)
                 }
               })
+            }, time);
+         
             
         })
      
@@ -375,6 +364,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 
        async function putMethodResponse(merged_arr,API_Id,i){
         //await putMethod(merged_arr,API_Id,Id,k)
+        await putMethod(merged_arr,API_Id,i)
          let x = findPathPos(nameArr,count,i)
       
                  let putMethodResponse_params_200 = {
@@ -383,7 +373,7 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                      restApiId: API_Id, /* required */
                      statusCode: '200', /* required */
                      responseModels: {
-                         "application/json": "ReturnSuccess"
+                         "application/json": "inlineResponse200"
                        /* '<String>': ... */
                      },
                      responseParameters: {
@@ -396,13 +386,14 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 					if (err){console.log(err, err.stack);}  // an error occurred
 					else     console.log(data);           // successful response
 				});
+                await delay(300)
 				let putMethodResponse_params_400 = {
 					httpMethod: merged_arr[i].Method, /* required */
 					resourceId: x, /* required */
 					restApiId: API_Id, /* required */
 					statusCode: '400', /* required */
 					responseModels: {
-						"application/json": "ReturnError"
+						"application/json": "inlineResponse400"
 						/* '<String>': ... */
 					},
 					responseParameters: {
@@ -415,13 +406,94 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 					if (err) console.log(err, err.stack); // an error occurred
 					else     console.log(data);           // successful response
 				});
+                await delay(300)
+                let putMethodResponse_params_401 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '401', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+                apig.putMethodResponse(putMethodResponse_params_401, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                await delay(300)
+                let putMethodResponse_params_402 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '402', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_402, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                await delay(300)
+                let putMethodResponse_params_403 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '403', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_403, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                await delay(300)
+                let putMethodResponse_params_404 = {
+					httpMethod: merged_arr[i].Method, /* required */
+					resourceId: x, /* required */
+					restApiId: API_Id, /* required */
+					statusCode: '404', /* required */
+					responseModels: {
+						"application/json": "inlineResponse400"
+						/* '<String>': ... */
+					},
+					responseParameters: {
+						"method.response.header.Access-Control-Allow-Origin": false
+					//   '<String>': true || false,
+						/* '<String>': ... */
+					}
+				};
+				apig.putMethodResponse(putMethodResponse_params_404, function(err, data) {
+					if (err) console.log(err, err.stack); // an error occurred
+					else     console.log(data);           // successful response
+				});
+                await delay(300)
 				let putMethodResponse_params_500 = {
 					httpMethod: merged_arr[i].Method, /* required */
 					resourceId: x, /* required */
 					restApiId: API_Id, /* required */
 					statusCode: '500', /* required */
 					responseModels: {
-						"application/json": "ReturnError"
+						"application/json": "inlineResponse400"
 						/* '<String>': ... */
 					},
 					responseParameters: {
@@ -434,27 +506,27 @@ const apiConfigure = async (csv_path, base_resource_id) => {
 					if (err) console.log(err, err.stack); // an error occurred
 					else     console.log(data);           // successful response
 				});
+                await delay(300)
         
     }
 
 
-       async function putIntegration(mergedObj,API_Id){
-            return new Promise((resolve) =>{
-
-           
-                 let x= findPathPos(nameArr,count,mergedObj.Index)
-        
+        function putIntegration(merged_arr,API_Id,g){
+            return new Promise(async(resolve) =>{
+                let x= findPathPos(nameArr,count,g)
+                console.log(merged_arr[g].Method,'Method')
+                console.log(merged_arr[g].path,'path')
                 apig.putIntegration({
                     restApiId:API_Id,
                     resourceId:x,
-                    httpMethod:mergedObj.Method,
+                    httpMethod:merged_arr[g].Method,
                     type:'HTTP',
                     connectionType:'VPC_LINK',
                     connectionId:vpc_connection_id,
-                    integrationHttpMethod:mergedObj.Method,
+                    integrationHttpMethod:merged_arr[g].Method,
                     passthroughBehavior: 'WHEN_NO_MATCH',
-                    uri:'http://custody-staff-api-nlb-internal-94f48f229edb800e.elb.ap-southeast-1.amazonaws.com:3001'+mergedObj.path,
-                    requestParameters:mergedObj.integration_requestParameters,
+                    uri:base_url+merged_arr[g].path,
+                    requestParameters:merged_arr[g].integration_requestParameters,
                     timeoutInMillis: 29000,	
                     cacheKeyParameters: []
                 },function(err,data){
@@ -462,75 +534,62 @@ const apiConfigure = async (csv_path, base_resource_id) => {
                         console.log(err,'too many??????????????????????????')
                     }else{
                         console.log(data,'inside put integration')
-                        let putIntegrationResponse_params_200 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '200',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: '2\\d{2}'
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'hihihiihihihihih'}
-                        })
-                        let putIntegrationResponse_params_400 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '400',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: '4\\d{2}'
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'byebyebyebyebyebyebyebyebyebye'}
-                        })
-                        let putIntegrationResponse_params_500 = {
-                            httpMethod:mergedObj.Method,
-                            resourceId:x,
-                            restApiId:API_Id,
-                            statusCode: '500',
-                            responseParameters: {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            selectionPattern: ''
-                        }
-                        apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
-                            if(err){console.log(err)}
-                            else{console.log(data),'hibyehibyehibyehibyehibyehibyehibyehibyehibyehibyehibye'}
-                        })
-
+                        resolve(data)
                     }
-                })
-             
-               
-                
-              
-            
-              
+                })              
         })
     }
 
-
-
-
+        async function putIntegrationResponse(merged_arr,API_Id,g){
+           await putIntegration(merged_arr,API_Id,g)
+          let x= findPathPos(nameArr,count,g)
+            let putIntegrationResponse_params_200 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '200',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '2\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_200,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hihihiihihihihih'}
+        })
+        await delay(300)
+        let putIntegrationResponse_params_400 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '400',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: '4\\d{2}'
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_400,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'byebyebyebyebyebyebyebyebyebye'}
+        })
+        await delay(300)
+        let putIntegrationResponse_params_500 = {
+            httpMethod:merged_arr[g].Method,
+            resourceId:x,
+            restApiId:API_Id,
+            statusCode: '500',
+            responseParameters: {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            selectionPattern: ''
+        }
+        apig.putIntegrationResponse(putIntegrationResponse_params_500,function(err,data){
+            if(err){console.log(err)}
+            else{console.log(data),'hibyehibyehibyehibyehibyehibyehibyehibyehibyehibyehibye'}
+        })    
+        await delay(300)
+        }
 		}
 apiConfigure(csv_path,base_resource_id).then (
-
  )
-
-
-
-
-
- 
-
-
-
-
-
+// done finish.js
